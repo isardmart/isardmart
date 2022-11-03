@@ -1,4 +1,4 @@
-- 👋 Hi, I’m @isardmart
+- 👋 Hi, I’m Antoni Galí Gimeno
 - 👀 I’m interested in Web & App Development & Product Design
 - 🌱 I’m currently learning HTML, CSS, Javascript...
 - 💞️ I’m looking to collaborate on ethical and inspiring projects.
