@@ -1,4 +1,4 @@
-- 👋 Hi, I’m Antoni Galí Gimeno
+<h1> 👋 Hi, I’m Antoni Galí Gimeno </h1>
 - 👀 I’m interested in Web & App Development & Product Design
 - 🌱 I’m currently learning HTML, CSS, Javascript, React, Express, React-Native...
 - 💞️ I’m looking to collaborate on ethical and inspiring projects.
