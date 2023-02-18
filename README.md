@@ -1,5 +1,5 @@
 <h1> 👋 Hi, I’m Antoni Galí </h1>
-<img src='https://media2.giphy.com/media/qgQUggAC3Pfv687qPC/giphy.gif?cid=ecf05e47h3asshrkbwtnb4vjwnko03r7zie1rgnhi6ups9zn&rid=giphy.gif&ct=g'></img>
+<img style='align:right;top:"500";height:"300";width:"400"' alt="GIF' src='https://media2.giphy.com/media/qgQUggAC3Pfv687qPC/giphy.gif?cid=ecf05e47h3asshrkbwtnb4vjwnko03r7zie1rgnhi6ups9zn&rid=giphy.gif&ct=g'></img>
 <p style='align:left'> 👀 I’m interested in Web & App Development & Product Design </p>
 
 <p>🌱 I’m currently learning HTML, CSS, Javascript, React, Express, React-Native...</p>
