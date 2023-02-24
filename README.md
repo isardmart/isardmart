@@ -5,7 +5,7 @@
 <h4>🌱 I’m currently learning NextJS, Typescript and NestJS...</h4>
 <h4>💞️ I’m looking to collaborate on ethical and inspiring projects.</h4>
 <h4>📫 If you want to reach me you can write on linkedin </h4>
-<a href='https://linkedin.com/in/antoni-g-g' width='40px' height='40px'>
-  <img src='https://cdn-icons-png.flaticon.com/512/174/174857.png' alt='linkedin-logo-png'/>
+<a href='https://linkedin.com/in/antoni-g-g' >
+  <img width='40px' height='40px' src='https://cdn-icons-png.flaticon.com/512/174/174857.png' alt='linkedin-logo-png'/>
  </a>
 
