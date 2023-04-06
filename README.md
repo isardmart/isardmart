@@ -17,7 +17,7 @@
 <code><img height="20" alt="nodejs" src="https://raw.githubusercontent.com/github/explore/80688e429a7d4ef2fca1e82350fe8e3517d3494d/topics/nodejs/nodejs.png"></code>    
 
 
-| [![Toni's GitHub stats](https://github-readme-stats.vercel.app/api/isardmart)](https://github.com/anuraghazra/github-readme-stats)
+| [![Toni's GitHub stats](https://github-readme-stats.vercel.app/api/isardmart&count_private=true)](https://github.com/anuraghazra/github-readme-stats)
 
 | ------------- | ------------- |
 
