@@ -14,3 +14,4 @@
 
 
 [![Top Langs](https://github-readme-stats.vercel.app/api/top-langs/?username=isardmart)](https://github.com/isardmart/github-readme-stats)
+![Isardmart's GitHub stats](https://github-readme-stats.vercel.app/api?username=isardmart&show_icons=true&theme=radical)
