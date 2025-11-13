@@ -11,6 +11,3 @@
  </h4>
 
 
-
-
-[![Top Langs](https://github-readme-stats.vercel.app/api/top-langs/?username=isardmart)](https://github.com/isardmart/github-readme-stats)
