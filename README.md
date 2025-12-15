@@ -1,4 +1,4 @@
-<h1> 👋 Hi, I’m Antoni Galí Gimeno </h1>
+<h1> 👋 Hello, I’m Antoni Galí Gimeno </h1>
 <img align=right top='100' height='30%' width='40%' alt="GIF" src='https://media2.giphy.com/media/qgQUggAC3Pfv687qPC/giphy.gif?cid=ecf05e47h3asshrkbwtnb4vjwnko03r7zie1rgnhi6ups9zn&rid=giphy.gif&ct=g'></img>
 <h4 style='align:left'> 👀 I’m interested in AI Integrated & Problem Solving Software </h4>
 
