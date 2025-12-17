@@ -4,7 +4,7 @@
 
 <h4>🌱 My Stack: NextJS, Typescript, TailwindCSS, React, PostgreSQL, NestJS...</h4>
 <h4>💞️ I’m looking to collaborate on ethical and inspiring projects</h4>
-<h4>📫 If you want to reach me you can write on linked
+<h4>📫 If you want to contact me you can write on linked
 <a href='https://linkedin.com/in/antoni-g-g' >
   <img width='20px' height='20px' src='https://cdn-icons-png.flaticon.com/512/174/174857.png' alt='linkedin-logo-png'/>
  </a>
