@@ -1,0 +1,55 @@
+name: Update GitHub Stats
+
+on:
+  schedule:
+    - cron: '0 6 * * 1'
+  workflow_dispatch:
+
+permissions:
+  contents: write
+  pull-requests: write
+
+jobs:
+  update:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+
+      - name: Update GitHub stats in README
+        env:
+          GH_STATS_TOKEN: ${{ secrets.GH_STATS_TOKEN }}
+        run: node scripts/update-stats.mjs
+
+      - name: Open PR with updated stats
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: |
+          BRANCH="chore/update-github-stats"
+
+          git config --local user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git config --local user.name "github-actions[bot]"
+
+          if git diff --quiet; then
+            echo "No changes — skipping PR"
+            exit 0
+          fi
+
+          git checkout -B "$BRANCH"
+          git add README.md
+          git commit -m "chore: update github stats"
+          git push --force origin "$BRANCH"
+
+          EXISTING=$(gh pr list --head "$BRANCH" --state open --json number --jq '.[0].number')
+          if [ -n "$EXISTING" ]; then
+            echo "PR #$EXISTING already open — branch updated"
+          else
+            gh pr create \
+              --title "chore: update github stats" \
+              --body "Weekly automated update of GitHub profile stats. Merge to publish." \
+              --base main \
+              --head "$BRANCH"
+          fi
