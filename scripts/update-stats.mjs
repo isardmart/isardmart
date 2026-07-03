@@ -1,5 +1,5 @@
 #!/usr/bin/env node
-import { readFileSync, writeFileSync } from 'fs';
+import { readFileSync, writeFileSync, mkdirSync } from 'fs';
 
 const TOKEN = process.env.GH_STATS_TOKEN || process.env.GITHUB_TOKEN;
 const USERNAME = 'isardmart';
@@ -56,11 +56,17 @@ query($login: String!) {
       totalPullRequestReviewContributions
       totalIssueContributions
     }
+    followers { totalCount }
+  }
+}
+`;
+
+const ORG_QUERY = `
+query($login: String!) {
+  user(login: $login) {
     organizations(first: 20) {
-      totalCount
       nodes { login name avatarUrl url }
     }
-    followers { totalCount }
   }
 }
 `;
@@ -100,12 +106,13 @@ function buildLangBar(map, total) {
   }).join('&emsp;');
 
   const svg = `<svg xmlns="http://www.w3.org/2000/svg" width="${BAR_W}" height="10">${rects}</svg>`;
-  const b64 = Buffer.from(svg).toString('base64');
 
-  return `<img src="data:image/svg+xml;base64,${b64}" alt="language bar" width="500" /><br/>\n${legend}`;
+  mkdirSync('assets', { recursive: true });
+  writeFileSync('assets/top-langs.svg', svg, 'utf8');
+  return `<img src="./assets/top-langs.svg" alt="language bar" width="500" /><br/>\n${legend}`;
 }
 
-function buildSection(user) {
+function buildSection(user, orgs) {
   const { map: langs, total: langTotal } = aggregateLangs(user.repositories.nodes);
   const stars = user.repositories.nodes.reduce((s, r) => s + r.stargazerCount, 0);
   const commits =
@@ -114,8 +121,8 @@ function buildSection(user) {
 
   const langBar = langTotal > 0 ? buildLangBar(langs, langTotal) : '_No language data_';
 
-  const orgLogos = user.organizations.nodes.length
-    ? user.organizations.nodes
+  const orgLogos = orgs.length
+    ? orgs
         .map(o => `<a href="${o.url}" title="${o.name ?? o.login}"><img src="${o.avatarUrl}" width="48" height="48" alt="${o.login}" style="border-radius:50%"/></a>`)
         .join('&nbsp;')
     : '_No public organization memberships_';
@@ -172,7 +179,15 @@ if (!readme.includes(START)) {
 console.log(`Fetching stats for @${USERNAME}…`);
 const { user } = await gql(QUERY, { login: USERNAME });
 
-const section = buildSection(user);
+let orgs = [];
+try {
+  const orgData = await gql(ORG_QUERY, { login: USERNAME });
+  orgs = orgData.user.organizations.nodes;
+} catch (err) {
+  console.warn(`⚠️ Skipping organizations (token likely missing read:org): ${err.message.split('\n')[0]}`);
+}
+
+const section = buildSection(user, orgs);
 const updated = readme.replace(
   new RegExp(`${START}[\\s\\S]*?${END}`),
   `${START}\n${section}\n${END}`,

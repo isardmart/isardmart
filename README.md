@@ -16,16 +16,43 @@
 
 ## 📊 GitHub Stats
 
-<div align="center">
-
-<a href="https://github.com/isardmart">
-  <img height="170" src="https://github-readme-stats.vercel.app/api?username=isardmart&show_icons=true&theme=github_dark&count_private=true&include_all_commits=true&hide_border=true&show=prs_merged,prs_merged_percentage" alt="Antoni's GitHub Stats"/>
-</a>&nbsp;
-<a href="https://github.com/isardmart">
-  <img height="170" src="https://github-readme-stats.vercel.app/api/top-langs/?username=isardmart&layout=compact&theme=github_dark&hide_border=true&count_private=true&langs_count=8" alt="Top Languages"/>
-</a>
-
-</div>
-
 <!-- GITHUB-STATS:START -->
+
+<table width="100%">
+<tr>
+<td valign="top" width="48%">
+
+### ⚡ Quick Stats
+
+| | |
+|---|:---:|
+| 📦 Public repos | **13** |
+| ⭐ Stars earned | **0** |
+| 🔀 PRs opened | **536** |
+| ✅ PRs merged | **505** |
+| 💻 Commits (yr)* | **4857** |
+| 🔍 PR reviews | **1** |
+| 🐛 Issues opened | **3** |
+| 👥 Followers | **8** |
+
+<sub>* public + private this year</sub>
+
+</td>
+<td valign="top" width="52%">
+
+### 🗣️ Top Languages
+
+<img src="./assets/top-langs.svg" alt="language bar" width="500" /><br/>
+<span>&#9679; <b>Jupyter Notebook</b>&nbsp;75.1%</span>&emsp;<span>&#9679; <b>JavaScript</b>&nbsp;8.7%</span>&emsp;<span>&#9679; <b>CSS</b>&nbsp;6.4%</span>&emsp;<span>&#9679; <b>TypeScript</b>&nbsp;5.5%</span>&emsp;<span>&#9679; <b>HTML</b>&nbsp;4.1%</span>&emsp;<span>&#9679; <b>Shell</b>&nbsp;0.3%</span>
+
+### 🏢 Organizations
+
+_No public organization memberships_
+
+</td>
+</tr>
+</table>
+
+<sub>📅 Last updated: Jul 3, 2026</sub>
+
 <!-- GITHUB-STATS:END -->
