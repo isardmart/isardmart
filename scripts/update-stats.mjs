@@ -61,16 +61,6 @@ query($login: String!) {
 }
 `;
 
-const ORG_QUERY = `
-query($login: String!) {
-  user(login: $login) {
-    organizations(first: 20) {
-      nodes { login name avatarUrl url }
-    }
-  }
-}
-`;
-
 function escapeXml(s) {
   return String(s).replace(/[<>&'"]/g, c =>
     ({ '<': '&lt;', '>': '&gt;', '&': '&amp;', "'": '&apos;', '"': '&quot;' }[c]));
@@ -145,20 +135,13 @@ function buildLangBar(map, total) {
   return `<img src="./assets/top-langs.svg" alt="Top languages" width="500" />`;
 }
 
-function buildSection(user, orgs) {
+function buildSection(user) {
   const { map: langs, total: langTotal } = aggregateLangs(user.repositories.nodes);
-  const stars = user.repositories.nodes.reduce((s, r) => s + r.stargazerCount, 0);
   const commits =
     user.contributionsCollection.totalCommitContributions +
     user.contributionsCollection.restrictedContributionsCount;
 
   const langBar = langTotal > 0 ? buildLangBar(langs, langTotal) : '_No language data_';
-
-  const orgLogos = orgs.length
-    ? orgs
-        .map(o => `<a href="${o.url}" title="${o.name ?? o.login}"><img src="${o.avatarUrl}" width="48" height="48" alt="${o.login}" style="border-radius:50%"/></a>`)
-        .join('&nbsp;')
-    : '_No public organization memberships_';
 
   const date = new Date().toLocaleDateString('en-US', {
     month: 'short', day: 'numeric', year: 'numeric',
@@ -174,11 +157,9 @@ function buildSection(user, orgs) {
 | | |
 |---|:---:|
 | 📦 Public repos | **${user.repositories.totalCount}** |
-| ⭐ Stars earned | **${stars}** |
 | 🔀 PRs opened | **${user.allPRs.totalCount}** |
 | ✅ PRs merged | **${user.mergedPRs.totalCount}** |
 | 💻 Commits (yr)* | **${commits}** |
-| 🔍 PR reviews | **${user.contributionsCollection.totalPullRequestReviewContributions}** |
 | 🐛 Issues opened | **${user.contributionsCollection.totalIssueContributions}** |
 | 👥 Followers | **${user.followers.totalCount}** |
 
@@ -190,10 +171,6 @@ function buildSection(user, orgs) {
 ### 🗣️ Top Languages
 
 ${langBar}
-
-### 🏢 Organizations
-
-${orgLogos}
 
 </td>
 </tr>
@@ -212,15 +189,7 @@ if (!readme.includes(START)) {
 console.log(`Fetching stats for @${USERNAME}…`);
 const { user } = await gql(QUERY, { login: USERNAME });
 
-let orgs = [];
-try {
-  const orgData = await gql(ORG_QUERY, { login: USERNAME });
-  orgs = orgData.user.organizations.nodes;
-} catch (err) {
-  console.warn(`⚠️ Skipping organizations (token likely missing read:org): ${err.message.split('\n')[0]}`);
-}
-
-const section = buildSection(user, orgs);
+const section = buildSection(user);
 const updated = readme.replace(
   new RegExp(`${START}[\\s\\S]*?${END}`),
   `${START}\n${section}\n${END}`,

@@ -27,11 +27,9 @@
 | | |
 |---|:---:|
 | 📦 Public repos | **13** |
-| ⭐ Stars earned | **0** |
 | 🔀 PRs opened | **536** |
 | ✅ PRs merged | **505** |
 | 💻 Commits (yr)* | **4857** |
-| 🔍 PR reviews | **1** |
 | 🐛 Issues opened | **3** |
 | 👥 Followers | **8** |
 
@@ -43,10 +41,6 @@
 ### 🗣️ Top Languages
 
 <img src="./assets/top-langs.svg" alt="Top languages" width="500" />
-
-### 🏢 Organizations
-
-_No public organization memberships_
 
 </td>
 </tr>
