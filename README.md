@@ -42,8 +42,7 @@
 
 ### 🗣️ Top Languages
 
-<img src="./assets/top-langs.svg" alt="language bar" width="500" /><br/>
-<span>&#9679; <b>Jupyter Notebook</b>&nbsp;75.1%</span>&emsp;<span>&#9679; <b>JavaScript</b>&nbsp;8.7%</span>&emsp;<span>&#9679; <b>CSS</b>&nbsp;6.4%</span>&emsp;<span>&#9679; <b>TypeScript</b>&nbsp;5.5%</span>&emsp;<span>&#9679; <b>HTML</b>&nbsp;4.1%</span>&emsp;<span>&#9679; <b>Shell</b>&nbsp;0.3%</span>
+<img src="./assets/top-langs.svg" alt="Top languages" width="500" />
 
 ### 🏢 Organizations
 

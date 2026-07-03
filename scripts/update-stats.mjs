@@ -71,6 +71,11 @@ query($login: String!) {
 }
 `;
 
+function escapeXml(s) {
+  return String(s).replace(/[<>&'"]/g, c =>
+    ({ '<': '&lt;', '>': '&gt;', '&': '&amp;', "'": '&apos;', '"': '&quot;' }[c]));
+}
+
 function aggregateLangs(repos) {
   const map = {};
   let total = 0;
@@ -99,17 +104,45 @@ function buildLangBar(map, total) {
     return rect;
   }).join('');
 
-  // Legend dots
+  // Legend baked INTO the svg so each dot keeps its language colour
+  // (GitHub markdown strips inline text colour, so a plain-text legend
+  // would render every bullet in the same default colour).
+  const FONT = 13;      // px
+  const CHAR_W = 7.1;   // approx advance width at this font size
+  const DOT_R = 5;      // dot radius
+  const DOT_GAP = 8;    // dot → text gap
+  const ITEM_GAP = 22;  // item → item gap
+  const ROW_H = 22;     // legend line height
+  const START_Y = 28;   // first legend baseline (below the bar)
+
+  let lx = 0;
+  let ly = 0;
   const legend = top8.map(([name, { size, color }]) => {
     const pct = ((size / total) * 100).toFixed(1);
-    return `<span>&#9679; <b>${name}</b>&nbsp;${pct}%</span>`;
-  }).join('&emsp;');
+    const label = `${name} ${pct}%`;
+    const itemW = DOT_R * 2 + DOT_GAP + label.length * CHAR_W;
+    if (lx > 0 && lx + itemW > BAR_W) { lx = 0; ly += 1; }
+    const baseline = START_Y + ly * ROW_H;
+    const cx = lx + DOT_R;
+    const cy = baseline - FONT / 2 + 1;
+    const tx = lx + DOT_R * 2 + DOT_GAP;
+    lx += itemW + ITEM_GAP;
+    return (
+      `<circle cx="${cx}" cy="${cy}" r="${DOT_R}" fill="${color}"/>` +
+      `<text x="${tx}" y="${baseline}" font-size="${FONT}" fill="#8b949e">` +
+      `<tspan font-weight="600">${escapeXml(name)}</tspan> ${pct}%</text>`
+    );
+  }).join('');
 
-  const svg = `<svg xmlns="http://www.w3.org/2000/svg" width="${BAR_W}" height="10">${rects}</svg>`;
+  const rows = ly + 1;
+  const svgH = START_Y + (rows - 1) * ROW_H + 4;
+  const svg =
+    `<svg xmlns="http://www.w3.org/2000/svg" width="${BAR_W}" height="${svgH}" ` +
+    `font-family="Segoe UI, Helvetica, Arial, sans-serif">${rects}${legend}</svg>`;
 
   mkdirSync('assets', { recursive: true });
   writeFileSync('assets/top-langs.svg', svg, 'utf8');
-  return `<img src="./assets/top-langs.svg" alt="language bar" width="500" /><br/>\n${legend}`;
+  return `<img src="./assets/top-langs.svg" alt="Top languages" width="500" />`;
 }
 
 function buildSection(user, orgs) {
