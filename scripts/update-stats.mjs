@@ -1,31 +1,47 @@
 #!/usr/bin/env node
 import { readFileSync, writeFileSync, mkdirSync } from 'fs';
 
-const TOKEN = process.env.GH_STATS_TOKEN || process.env.GITHUB_TOKEN;
+// Try the dedicated PAT first (needed for private contribution counts), then
+// fall back to the auto-provided GITHUB_TOKEN. An expired/invalid PAT should
+// not break the whole run, so we skip a token that fails auth (401/403).
+const CANDIDATE_TOKENS = [
+  ['GH_STATS_TOKEN', process.env.GH_STATS_TOKEN],
+  ['GITHUB_TOKEN', process.env.GITHUB_TOKEN],
+].filter(([, value]) => value);
+
 const USERNAME = 'isardmart';
 const README_PATH = 'README.md';
 const START = '<!-- GITHUB-STATS:START -->';
 const END = '<!-- GITHUB-STATS:END -->';
 
-if (!TOKEN) {
+if (!CANDIDATE_TOKENS.length) {
   console.error('Error: set GH_STATS_TOKEN or GITHUB_TOKEN env var');
   process.exit(1);
 }
 
 async function gql(query, variables = {}) {
-  const res = await fetch('https://api.github.com/graphql', {
-    method: 'POST',
-    headers: {
-      Authorization: `Bearer ${TOKEN}`,
-      'Content-Type': 'application/json',
-      'User-Agent': 'github-profile-stats/1.0',
-    },
-    body: JSON.stringify({ query, variables }),
-  });
-  if (!res.ok) throw new Error(`HTTP ${res.status}: ${await res.text()}`);
-  const { data, errors } = await res.json();
-  if (errors?.length) throw new Error(errors.map(e => e.message).join('\n'));
-  return data;
+  let lastError;
+  for (const [name, token] of CANDIDATE_TOKENS) {
+    const res = await fetch('https://api.github.com/graphql', {
+      method: 'POST',
+      headers: {
+        Authorization: `Bearer ${token}`,
+        'Content-Type': 'application/json',
+        'User-Agent': 'github-profile-stats/1.0',
+      },
+      body: JSON.stringify({ query, variables }),
+    });
+    if (res.status === 401 || res.status === 403) {
+      lastError = new Error(`${name} rejected: HTTP ${res.status}: ${await res.text()}`);
+      console.warn(`⚠️  ${name} failed auth (HTTP ${res.status}); trying next token…`);
+      continue;
+    }
+    if (!res.ok) throw new Error(`HTTP ${res.status}: ${await res.text()}`);
+    const { data, errors } = await res.json();
+    if (errors?.length) throw new Error(errors.map(e => e.message).join('\n'));
+    return data;
+  }
+  throw lastError ?? new Error('No valid GitHub token available');
 }
 
 const QUERY = `
