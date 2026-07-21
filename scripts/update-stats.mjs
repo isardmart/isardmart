@@ -1,5 +1,5 @@
 #!/usr/bin/env node
-import { readFileSync, writeFileSync, mkdirSync } from 'fs';
+import { readFileSync, writeFileSync, mkdirSync, existsSync } from 'fs';
 
 // Try the dedicated PAT first (needed for private contribution counts), then
 // fall back to the auto-provided GITHUB_TOKEN. An expired/invalid PAT should
@@ -38,32 +38,35 @@ async function gql(query, variables = {}) {
     }
     if (!res.ok) throw new Error(`HTTP ${res.status}: ${await res.text()}`);
     const { data, errors } = await res.json();
-    if (errors?.length) throw new Error(errors.map(e => e.message).join('\n'));
+    if (errors?.length) {
+      const message = errors.map(e => e.message).join('\n');
+      // The ephemeral Actions GITHUB_TOKEN has much stricter GraphQL cost
+      // budgets than a PAT, so a query that is fine with GH_STATS_TOKEN gets
+      // rejected here. Make that actionable instead of a bare stack trace.
+      if (/resource limit/i.test(message)) {
+        throw new Error(
+          `${message}\n` +
+          'Hint: this usually means the request ran under the fallback ' +
+          'GITHUB_TOKEN because GH_STATS_TOKEN was rejected (see the 401 ' +
+          'warning above). Renew the GH_STATS_TOKEN secret with a valid PAT.',
+        );
+      }
+      throw new Error(message);
+    }
     return data;
   }
   throw lastError ?? new Error('No valid GitHub token available');
 }
 
-const QUERY = `
+// Cheap scalar stats — these succeed even under the restrictive GITHUB_TOKEN.
+const STATS_QUERY = `
 query($login: String!) {
   user(login: $login) {
     repositories(
-      first: 100
       ownerAffiliations: [OWNER]
       isFork: false
       privacy: PUBLIC
-      orderBy: { field: UPDATED_AT, direction: DESC }
-    ) {
-      totalCount
-      nodes {
-        name
-        stargazerCount
-        languages(first: 10, orderBy: { field: SIZE, direction: DESC }) {
-          totalSize
-          edges { size node { name color } }
-        }
-      }
-    }
+    ) { totalCount }
     allPRs: pullRequests { totalCount }
     mergedPRs: pullRequests(states: [MERGED]) { totalCount }
     contributionsCollection {
@@ -73,6 +76,29 @@ query($login: String!) {
       totalIssueContributions
     }
     followers { totalCount }
+  }
+}
+`;
+
+// Heavier repositories + languages query. This is the expensive part that a
+// weak fallback token can choke on, so it is fetched separately and treated
+// as best-effort (see main): a failure here must not sink the whole run.
+const LANGS_QUERY = `
+query($login: String!) {
+  user(login: $login) {
+    repositories(
+      first: 100
+      ownerAffiliations: [OWNER]
+      isFork: false
+      privacy: PUBLIC
+      orderBy: { field: UPDATED_AT, direction: DESC }
+    ) {
+      nodes {
+        languages(first: 10, orderBy: { field: SIZE, direction: DESC }) {
+          edges { size node { name color } }
+        }
+      }
+    }
   }
 }
 `;
@@ -151,13 +177,10 @@ function buildLangBar(map, total) {
   return `<img src="./assets/top-langs.svg" alt="Top languages" width="500" />`;
 }
 
-function buildSection(user) {
-  const { map: langs, total: langTotal } = aggregateLangs(user.repositories.nodes);
+function buildSection(user, langBar) {
   const commits =
     user.contributionsCollection.totalCommitContributions +
     user.contributionsCollection.restrictedContributionsCount;
-
-  const langBar = langTotal > 0 ? buildLangBar(langs, langTotal) : '_No language data_';
 
   const date = new Date().toLocaleDateString('en-US', {
     month: 'short', day: 'numeric', year: 'numeric',
@@ -203,9 +226,24 @@ if (!readme.includes(START)) {
 }
 
 console.log(`Fetching stats for @${USERNAME}…`);
-const { user } = await gql(QUERY, { login: USERNAME });
+const { user } = await gql(STATS_QUERY, { login: USERNAME });
 
-const section = buildSection(user);
+// Languages are best-effort: the repositories+languages query is the most
+// expensive one and can be rejected by a weak fallback token. If it fails we
+// keep the previously generated bar (if any) instead of failing the run.
+let langBar;
+try {
+  const { user: repoUser } = await gql(LANGS_QUERY, { login: USERNAME });
+  const { map: langs, total: langTotal } = aggregateLangs(repoUser.repositories.nodes);
+  langBar = langTotal > 0 ? buildLangBar(langs, langTotal) : '_No language data_';
+} catch (err) {
+  console.warn(`⚠️  Could not refresh top languages: ${err.message}`);
+  langBar = existsSync('assets/top-langs.svg')
+    ? '<img src="./assets/top-langs.svg" alt="Top languages" width="500" />'
+    : '_No language data_';
+}
+
+const section = buildSection(user, langBar);
 const updated = readme.replace(
   new RegExp(`${START}[\\s\\S]*?${END}`),
   `${START}\n${section}\n${END}`,
