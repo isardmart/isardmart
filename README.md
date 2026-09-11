@@ -31,7 +31,7 @@
 | ✅ PRs merged | **104** |
 | 💻 Commits (yr)* | **4246** |
 | 🐛 Issues opened | **3** |
-| 👥 Followers | **10** |
+| 👥 Followers | **11** |
 
 <sub>* public + private this year</sub>
 
@@ -46,6 +46,6 @@
 </tr>
 </table>
 
-<sub>📅 Last updated: Sep 10, 2026</sub>
+<sub>📅 Last updated: Sep 11, 2026</sub>
 
 <!-- GITHUB-STATS:END -->
