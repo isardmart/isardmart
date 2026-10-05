@@ -29,9 +29,9 @@
 | 📦 Public repos | **13** |
 | 🔀 PRs opened | **107** |
 | ✅ PRs merged | **104** |
-| 💻 Commits (yr)* | **4175** |
+| 💻 Commits (yr)* | **3987** |
 | 🐛 Issues opened | **3** |
-| 👥 Followers | **12** |
+| 👥 Followers | **11** |
 
 <sub>* public + private this year</sub>
 
@@ -46,6 +46,6 @@
 </tr>
 </table>
 
-<sub>📅 Last updated: Oct 4, 2026</sub>
+<sub>📅 Last updated: Oct 5, 2026</sub>
 
 <!-- GITHUB-STATS:END -->
